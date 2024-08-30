@@ -21,22 +21,44 @@ exports.signUp = asyncError(async (req, res, next) => {
 })
 
 
+// exports.login = asyncError(async (req, res, next) => {
+//     const user = req.user
+//     res.status(200).json({
+//         message: "success",
+//         data: {
+//             user
+//         }
+//     })
+// })
+
 exports.login = asyncError(async (req, res, next) => {
-    const { username, password } = req.body
-
-    if (!username || !password) {
-        return next(new AppError('Please provide email or password', 401))
+    const user = req.user
+    if (!user) {
+        return next(new AppError("Inc username or password", 404))
     }
-
-    const user = await User.findOne({ username }).select('+password')
-
-    if (!user || !(await user.correctPassword(password, user.password))) {
-        return next(new AppError('Incorrect username or password', 401))
-    }
+    console.log('Authentication successful')
     res.status(200).json({
         message: "success",
         data: {
             user
         }
     })
+})
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return next(new AppError("You don't have access to perform this actiom", 403))
+        }
+        next()
+    }
+}
+
+
+exports.checkAuthenticated = asyncError(async (req, res, next) => {
+    if (req.isAuthenticated()) { return next() }
+})
+
+exports.logOut = asyncError(async (req, res, next) => {
+    req.logOut()
 })

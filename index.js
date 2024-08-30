@@ -5,11 +5,10 @@ const dotenv = require('dotenv')
 const errorHandler = require('./src/controllers/errorController')
 const cors = require('cors')
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
 const session = require('express-session')
-const User = require('./src/models/userModel')
+const passConfig = require('./src/helpers/passportConfiguration')
 const userRouter = require('./src/routes/userRoutes')
-// const asyncError=require('./')
+
 // starting express
 const app = express()
 // enabling .env file
@@ -38,30 +37,13 @@ app.use(passport.initialize())
 
 app.use(passport.session())
 
-const authUser = async (username, password, done) => {
-    const authenticated_user = await User.findOne({ username: username }).select('+password')
-    return done(null, authenticated_user)
-}
-passport.use(new LocalStrategy(authUser))
 
-// serializeUser
-passport.serializeUser((user, done) => {
-
-    done(null, user._id)
-})
-
-// De serializeUser
-passport.deserializeUser((_id, done) => {
-
-    done(null, { user: _id })
-})
-
-bd = (req, res, next) => {
-    console.log(req.session)
-    console.log(req.session.passport)
-    next()
-}
-app.use(bd)
+// bd = (req, res, next) => {
+//     console.log(req.session)
+//     console.log(req.session.passport)
+//     next()
+// }
+// app.use(bd)
 // routes
 app.use('/api/mtm/user', userRouter)
 
@@ -71,7 +53,7 @@ mongoose.connect("mongodb://127.0.0.1/MTM", {}).then(() => console.log("Database
 
 // handling error
 app.use(errorHandler)
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)
 })
