@@ -7,7 +7,9 @@ const cors = require('cors')
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const session = require('express-session')
-
+const User = require('./src/models/userModel')
+const userRouter = require('./src/routes/userRoutes')
+// const asyncError=require('./')
 // starting express
 const app = express()
 // enabling .env file
@@ -36,28 +38,32 @@ app.use(passport.initialize())
 
 app.use(passport.session())
 
+const authUser = async (username, password, done) => {
+    const authenticated_user = await User.findOne({ username: username }).select('+password')
+    return done(null, authenticated_user)
+}
 passport.use(new LocalStrategy(authUser))
 
-authUser = (user, password, done) => {
-    // if user is found in DB
-    return done(null, currentUser)
-    // If the user is found but password isn't correct
-    return done(null, false)
-    // If the user not found in DB
-    return done(null, false)
-}
-
 // serializeUser
-passport.serializeUser((userObj, done) => {
-    done(null, userObj)
+passport.serializeUser((user, done) => {
+
+    done(null, user._id)
 })
 
 // De serializeUser
-passport.serializeUser((userObj, done) => {
-    done(null, userObj)
-})
-// routes
+passport.deserializeUser((_id, done) => {
 
+    done(null, { user: _id })
+})
+
+bd = (req, res, next) => {
+    console.log(req.session)
+    console.log(req.session.passport)
+    next()
+}
+app.use(bd)
+// routes
+app.use('/api/mtm/user', userRouter)
 
 // routes
 // mongoose database connection
