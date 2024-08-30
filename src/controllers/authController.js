@@ -6,7 +6,8 @@ exports.signUp = asyncError(async (req, res, next) => {
     const newUser = await User.create({
         username: req.body.username,
         password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm
+        passwordConfirm: req.body.passwordConfirm,
+        role: req.body.role
     })
     if (!newUser) {
         return next(new AppError('Enter required fields', 404))

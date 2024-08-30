@@ -19,6 +19,14 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Password not same'
         }
+    },
+    role: {
+        type: String,
+        enum: {
+            values: ['admin', 'user'],
+            message: "only {values} are required"
+        },
+        default: 'user'
     }
 
 }, { timestamps: true })
