@@ -22,16 +22,6 @@ exports.signUp = asyncError(async (req, res, next) => {
 })
 
 
-// exports.login = asyncError(async (req, res, next) => {
-//     const user = req.user
-//     res.status(200).json({
-//         message: "success",
-//         data: {
-//             user
-//         }
-//     })
-// })
-
 exports.login = asyncError(async (req, res, next) => {
     const user = req.user
     if (!user) {
@@ -61,5 +51,9 @@ exports.checkAuthenticated = asyncError(async (req, res, next) => {
 })
 
 exports.logOut = asyncError(async (req, res, next) => {
-    req.logOut()
+    req.logOut((err) => {
+        if (err) {
+            return next(err);
+        }
+    })
 })
