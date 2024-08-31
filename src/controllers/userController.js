@@ -95,7 +95,9 @@ exports.getSuggestedUsers = asyncError(async (req, res, next) => {
         return bFriends.length - aFriends.length
     })
     suggestedUsers = suggestedUsers.slice(0, 2)
-    console.log(suggestedUsers)
+    res.status(200).json({
+        data: suggestedUsers
+    })
 })
 
 exports.getAllUsers = asyncError(async (req, res, next) => { })
