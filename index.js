@@ -1,5 +1,6 @@
 const express = require("express")
 const path = require('path')
+const MongoStore = require('connect-mongo')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const errorHandler = require('./src/controllers/errorController')
@@ -30,7 +31,9 @@ app.use('*', cors())
 app.use(session({
     secret: "secret",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: "mongodb://127.0.0.1/MTM" }),
+    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }))
 
 app.use(passport.initialize())

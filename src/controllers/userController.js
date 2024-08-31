@@ -10,28 +10,113 @@ exports.addRemoveFriend = asyncError(async (req, res, next) => {
         return next(new AppError('Not accepted'))
     }
 
-    const user = await User.findById(userId)
-    const newFriend = await User.findById(friendId)
-    console.log(newFriend)
-})
+    // Find both users
+    const user = await User.findById(userId);
+    const newFriend = await User.findById(friendId);
 
-
-exports.getUser = asyncError(async (req, res, next) => {
-    const id = req.params.id
-    const user = await User.findById(id)
-
-    if (!user) {
-        return next(new AppError(`No user is found with this ${req.params.id}`, 404))
+    if (!user || !newFriend) {
+        return next(new AppError('User or friend not found', 404));
     }
 
+    // Check if friendId is already in user's friends list
+    const friendIndex = user.friends.indexOf(friendId);
+    if (friendIndex !== -1) {
+        // Remove friend from the list
+        user.friends.splice(friendIndex, 1);
+        await user.save(); // Save changes to the database
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Friend removed successfully'
+        });
+    }
+
+    // Add friend if not already in the list
+    user.friends.push(friendId);
+    await user.save(); // Save changes to the database
+
+    return res.status(200).json({
+        status: 'success',
+        message: 'Friend added successfully'
+    });
+});
+
+exports.getUserFollowers = asyncError(async (req, res, next) => {
+    // getting user id from req.params
+    const { id } = req.params
+
+    // // searching User database for a user with id
+    const user = await User.findById(id)
+
+    const friends = await Promise.all(user.friends.map(frn => User.findById(frn)))
+
+    const friendsDetails = friends.map(({ username }) => { return { username } })
+
     res.status(200).json({
-        status: "success",
+        message: "success",
+        followers: friendsDetails.length,
         data: {
-            user
+            friendsDetails
         }
     })
 
 })
+
+exports.getUser = asyncError(async (req, res, next) => {
+    const { id } = req.params
+
+    const user = await User.findById(id)
+
+    const friends = await Promise.all(user.friends.map(frn => User.findById(frn)))
+
+    let friendsTotal = friends.length
+    res.status(200).json({
+        friends,
+        friendsTotal,
+        user
+    })
+})
+
+exports.getSuggestedUsers = asyncError(async (req, res, next) => {
+    const currentUser = req.user
+
+    const users = await User.find()
+
+    const currentUserFriendsIds = currentUser.friends.map(frn => frn)
+
+    console.log(currentUserFriendsIds)
+
+    let suggestedUsers = users.filter(user => !currentUserFriendsIds.includes(user._id.toString()) && user.username !== currentUser.username)
+    suggestedUsers.sort((a, b) => {
+        const aFriends = a.friends.filter(frn => currentUserFriendsIds.includes(frn._id.toString()))
+
+        const bFriends = b.friends.filter(frn => currentUserFriendsIds.includes(frn._id.toString()))
+
+        return bFriends.length - aFriends.length
+    })
+    suggestedUsers = suggestedUsers.slice(0, 2)
+    console.log(suggestedUsers)
+})
+
+exports.getAllUsers = asyncError(async (req, res, next) => { })
+
+
+// exports.getUser = asyncError(async (req, res, next) => {
+//     const id = req.params.id
+//     const user = await User.findById(id)
+
+//     if (!user) {
+//         return next(new AppError(`No user is found with this ${req.params.id}`, 404))
+//     }
+
+//     res.status(200).json({
+//         status: "success",
+//         data: {
+//             user
+//         }
+//     })
+
+// })
 
 exports.getAllUsers = asyncError(async (req, res, next) => {
 

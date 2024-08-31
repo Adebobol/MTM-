@@ -25,8 +25,8 @@ const passConfig = asyncError(async (req, res, next) => {
         const authenticated_user = await User.findOne({ username: username }).select('+password')
 
         if (!authenticated_user || !(await authenticated_user.correctPassword(password, authenticated_user.password))) {
-            // return new AppError('Invalid username or password', 401)
-            return console.log("Inc")
+            console.log("Inc")
+            new AppError('jhh', 404)
         }
 
         return done(null, authenticated_user)

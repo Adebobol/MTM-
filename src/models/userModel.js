@@ -10,16 +10,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password is required']
     },
-    passwordConfirm: {
-        type: String,
-        required: [true, 'Password not same'],
-        validate: {
-            validator: function (el) {
-                el === this.password
-            },
-            message: 'Password not same'
-        }
-    },
+    // passwordConfirm: {
+    //     type: String,
+    //     required: [true, 'Password not same'],
+    //     validate: {
+    //         validator: function (el) {
+    //             el === this.password
+    //         },
+    //         message: 'Password not same'
+    //     }
+    // },
     role: {
         type: String,
         enum: {
@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
             message: "only {values} are required"
         },
         default: 'user'
+    },
+    friends: {
+        type: Array,
+        default: []
     }
 
 }, { timestamps: true })
