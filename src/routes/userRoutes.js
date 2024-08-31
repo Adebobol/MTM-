@@ -6,7 +6,7 @@ const LocalStrategy = require('passport-local').Strategy
 const passConfig = require('../helpers/passportConfiguration')
 
 const { signUp, login, checkAuthenticated, logOut, restrictTo } = require('../controllers/authController')
-const { getAllUsers, getUser, updatePassword, getMe, deleteMe, updateMe } = require('../controllers/userController')
+const { getAllUsers, getUser, updatePassword, addRemoveFriend, getMe, deleteMe, updateMe } = require('../controllers/userController')
 
 
 
@@ -18,6 +18,8 @@ router.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
 }))
 router.use(checkAuthenticated)
+
+router.route('/add-friend').post(addRemoveFriend)
 
 // router.patch('/updatePassword', updatePassword)
 router.get('/me', getMe, getUser)

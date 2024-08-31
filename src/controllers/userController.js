@@ -3,6 +3,18 @@ const asyncError = require('../helpers/asyncError')
 const User = require('../models/userModel')
 
 
+exports.addRemoveFriend = asyncError(async (req, res, next) => {
+    const userId = req.user._id.toString()
+    const { friendId } = req.body
+    if (userId === friendId) {
+        return next(new AppError('Not accepted'))
+    }
+
+    const user = await User.findById(userId)
+    const newFriend = await User.findById(friendId)
+    console.log(newFriend)
+})
+
 
 exports.getUser = asyncError(async (req, res, next) => {
     const id = req.params.id
