@@ -100,7 +100,9 @@ exports.getSuggestedUsers = asyncError(async (req, res, next) => {
     })
 })
 
-exports.getAllUsers = asyncError(async (req, res, next) => { })
+exports.getAllUsers = asyncError(async (req, res, next) => {
+
+})
 
 
 // exports.getUser = asyncError(async (req, res, next) => {

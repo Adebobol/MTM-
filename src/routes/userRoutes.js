@@ -19,6 +19,7 @@ router.post('/login', passport.authenticate('local', {
 }))
 router.use(checkAuthenticated)
 
+router.route('/').get(getAllUsers)
 router.route('/suggested-friends').get(getSuggestedUsers)
 router.route('/add-friend').post(addRemoveFriend)
 router.route('/followers/:id').get(getUserFollowers)
@@ -34,7 +35,7 @@ router.delete('/logout', logOut)
 router.use(restrictTo('admin'))
 
 
-router.route('/').get(getAllUsers)
+
 // router.route('/:id').get(getUser)
 
 
