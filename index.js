@@ -9,6 +9,8 @@ const passport = require('passport')
 const session = require('express-session')
 const passConfig = require('./src/helpers/passportConfiguration')
 const userRouter = require('./src/routes/userRoutes')
+const postRouter = require('./src/routes/postRoutes')
+
 
 // starting express
 const app = express()
@@ -49,7 +51,7 @@ app.use(passport.session())
 // app.use(bd)
 // routes
 app.use('/api/mtm/user', userRouter)
-
+app.use('/api/mtm/post', postRouter)
 // routes
 // mongoose database connection
 mongoose.connect("mongodb://127.0.0.1/MTM", {}).then(() => console.log("Database Connected."))
