@@ -10,6 +10,8 @@ const session = require('express-session')
 const passConfig = require('./src/helpers/passportConfiguration')
 const userRouter = require('./src/routes/userRoutes')
 const postRouter = require('./src/routes/postRoutes')
+const fileupload = require('express-fileupload');
+const bodyParser = require('body-parser')
 
 
 // starting express
@@ -19,7 +21,8 @@ dotenv.config({ path: "././.env" })
 
 // middlewares
 app.use(express.json())
-
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '10kb' }));
 
 // cors
 app.use(cors())

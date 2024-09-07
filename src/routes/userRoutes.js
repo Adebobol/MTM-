@@ -11,7 +11,7 @@ const { getAllUsers, getUser, updatePassword, addRemoveFriend, getMe, deleteMe, 
 
 
 router.post('/', signUp)
-router.get('/login', login)
+// router.get('/login', login)
 passConfig()
 router.post('/login', passport.authenticate('local', {
     successRedirect: '/',
@@ -32,11 +32,11 @@ router.delete('/deleteMe', deleteMe)
 router.patch('/updateMe', updateMe)
 router.delete('/logout', logOut)
 
-router.use(restrictTo('admin'))
+// router.use(restrictTo('admin'))
 
 
 
-// router.route('/:id').get(getUser)
+router.route('/:id').get(getUser)
 
 
 

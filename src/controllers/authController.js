@@ -1,6 +1,8 @@
 const AppError = require('../helpers/AppError')
 const asyncError = require('../helpers/asyncError')
 const User = require('../models/userModel')
+const statusCodes = require('http-status-codes')
+
 
 exports.signUp = asyncError(async (req, res, next) => {
     const newUser = await User.create({
@@ -48,6 +50,10 @@ exports.restrictTo = (...roles) => {
 
 exports.checkAuthenticated = asyncError(async (req, res, next) => {
     if (req.isAuthenticated()) { return next() }
+    console.log('logged out')
+    res.status(statusCodes.UNAUTHORIZED).json({
+        message: "You are logged out please log in."
+    })
 })
 
 exports.logOut = asyncError(async (req, res, next) => {

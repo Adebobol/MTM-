@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy
 const User = require('../models/userModel')
 const asyncError = require('./asyncError')
 const AppError = require('./AppError')
-const { parse, stringify } = require('flatted')
+const statusCodes = require('http-status-codes')
 
 
 const passConfig = asyncError(async (req, res, next) => {
@@ -31,7 +31,9 @@ const passConfig = asyncError(async (req, res, next) => {
 
         return done(null, authenticated_user)
     }
+
     passport.use(new LocalStrategy(authUser))
+
 })
 module.exports = passConfig
 

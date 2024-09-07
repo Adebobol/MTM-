@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     friends: {
         type: Array,
         default: []
+    },
+    posts: {
+        type: Array,
+        default: []
     }
 
 }, { timestamps: true })
