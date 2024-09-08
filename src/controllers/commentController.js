@@ -25,7 +25,7 @@ exports.createComment = asyncError(async (req, res, next) => {
 })
 
 exports.getAllPostComments = asyncError(async (req, res, next) => {
-    const comments = await Comment.find({ post: req.params.id }).populate('user').sort({ createdAt: -1 })
+    const comments = await Comment.find({ post: req.params.postId }).populate('user').sort({ createdAt: -1 })
 
     if (!comments) return next(new AppError('No comments added yet', 404))
     res.status(200).json({
@@ -37,19 +37,29 @@ exports.getAllPostComments = asyncError(async (req, res, next) => {
 })
 
 exports.getOneComment = asyncError(async (req, res, next) => {
-    const comment = await Comment.findById(req.params.id)
-    if (!comment) return next(new AppError('Comment has been ', 404))
+    const comment = await Comment.findById(req.params.commentId)
+    if (!comment) return next(new AppError('Comment has been deleted', 404))
     res.status(201).json({
         comment: comment
     })
+
 })
 
 exports.editComment = asyncError(async (req, res, next) => {
-    const comment = await Comment.findById(req.params.id)
+    const comment = await Comment.findById(req.params.commentId)
     if (!comment) return next(new AppError("Can't get comment", 404))
 
     if (comment.user.toString() !== req.user._id.toString()) return next(new AppError("You can edit this comment.", 404))
 
+    if (!req.body.text) {
+        comment.text
+        return res.status(201).json({
+            message: "Post edited successfully",
+            data: comment
+        })
+    }
+
+    console.log("There's a text update.")
     comment.text = req.body.text
     comment.save()
 
@@ -60,12 +70,16 @@ exports.editComment = asyncError(async (req, res, next) => {
 })
 
 exports.toggleLikeComment = asyncError(async (req, res, next) => {
-    const currentUserId = req.user._id
-    const comment = await Comment.findById(req.params._id)
+    const currentUserId = req.user._id.toString()
+    const comment = await Comment.findById(req.params.commentId)
 
     if (comment.likes.includes(currentUserId)) {
-        comment.likes.filter(like => like !== currentUserId)
+        comment.likes = comment.likes.filter(like => like !== currentUserId)
         await comment.save()
+        return res.status(201).json({
+            message: "Comment Unliked",
+            comment
+        })
     }
 
     comment.likes.push(currentUserId)
@@ -78,17 +92,23 @@ exports.toggleLikeComment = asyncError(async (req, res, next) => {
 })
 
 exports.deleteComment = asyncError(async (req, res, next) => {
-    const comment = await Comment.findById(req.params.id)
-    if (!comment) {
-        next(new AppError('Comment has been deleted', 404))
+    const comment = await Comment.findById(req.params.commentId)
+    const post = await Post.findById(req.params.postId)
+
+    if (post.comments.includes(req.params.commentId)) {
+
+        post.comments = post.comments.filter(comment => comment !== req.params.commentId)
+        await post.save()
     }
 
-    if (comment.user.toString() !== req.user._id) {
+    if (!comment) {
+        return next(new AppError('Comment has been deleted', 404))
+    }
+
+    if (comment.user.toString() !== req.user._id.toString()) {
         return next(new AppError("Can't delete comment.", 404))
     }
-
-    await Commment.findByIdAndDelete(req.params.id)
-
+    await Comment.findByIdAndDelete(req.params.commentId)
     res.status(201).json({
         message: "Comment deleted Successfully",
         comment: null

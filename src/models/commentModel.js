@@ -12,11 +12,11 @@ const commentSchema = new mongoose.Schema({
         required: true
     },
     text: {
-        type: string,
+        type: String,
         required: true
     },
     likes: {
-        type: [string],
+        type: [String],
         default: []
     }
 }, { timestamps: true })

@@ -115,23 +115,24 @@ exports.deletePost = asyncError(async (req, res, next) => {
 })
 
 exports.toggleLikePost = asyncError(async (req, res, next) => {
-    const currentUserId = req.user._id
+    const currentUserId = req.user._id.toString()
     const postId = req.params.id
     const post = await Post.findById(postId)
-    console.log(presentUser, postId)
+
 
     if (post.likes.includes(currentUserId)) {
-        post.likes.filter(like => like !== currentUserId)
+        post.likes = post.likes.filter((like) => like !== currentUserId)
         await post.save()
-        res.status(200).json({
-            message: "Unliked",
-            data: post.likes
+        return res.status(200).json({
+            message: "Unliked"
         })
+
     }
+    console.log('Not included')
     post.likes.push(currentUserId)
     await post.save()
 
-    res.status(200).json({
+    return res.status(200).json({
         message: "liked",
         data: post.likes
     })
