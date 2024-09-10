@@ -8,13 +8,13 @@ const Post = require('../models/postModel')
 
 // cloudinary configuration
 cloudinary.config({
-    cloud_name: 'dpow0m09z',
-    api_key: 739729412575541,
-    api_secret: 'QMJCcnTKDqAjz0Quy6yZDBroZfo'
+    // cloud_name: 'dpow0m09z',
+    // api_key: 739729412575541,
+    // api_secret: 'QMJCcnTKDqAjz0Quy6yZDBroZfo'
 
-    // cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    // api_key: process.env.CLOUDINARY_API_KEY,
-    // api_secret: process.env.CLOUDINARY_API_SECRET
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
 exports.uploadUserPhoto = upload.single('photo')
