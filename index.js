@@ -11,8 +11,9 @@ const passConfig = require('./src/helpers/passportConfiguration')
 const userRouter = require('./src/routes/userRoutes')
 const postRouter = require('./src/routes/postRoutes')
 const commentRouter = require('./src/routes/commentRoutes')
-const fileupload = require('express-fileupload');
-const bodyParser = require('body-parser')
+const helmet = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize')
+const rateLimit = require('express-rate-limit')
 
 
 // starting express
@@ -24,11 +25,21 @@ dotenv.config({ path: "././.env" })
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json({ limit: '10kb' }));
-
+app.use(helmet())
+app.use(mongoSanitize())
 // cors
 app.use(cors())
 app.use('*', cors())
 
+
+// Limit request from same api
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 100,
+    message: 'Too many request from this Ip, please try again in an hour.'
+})
+
+app.use('/api', limiter)
 // initializing passport middleware
 //1) express-session creates a req.session object, when it is involked via app.use(session())
 // 2) passport adds additional object req.session.passport to the req.session
